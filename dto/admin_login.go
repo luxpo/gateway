@@ -6,8 +6,8 @@ import (
 )
 
 type AdminLoginInput struct {
-	Username string `form:"username" json:"username" comment:"用户名"  validate:"required" example:""`
-	Password string `form:"password" json:"password" comment:"密码"   validate:"required" example:""`
+	Username string `form:"username" json:"username" comment:"用户名"  validate:"required,is_valid_username" example:"admin"`
+	Password string `form:"password" json:"password" comment:"密码"   validate:"required" example:"123456"`
 }
 
 func (params *AdminLoginInput) BindingValidParams(c *gin.Context) error {
