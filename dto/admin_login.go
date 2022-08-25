@@ -10,6 +10,10 @@ type AdminLoginInput struct {
 	Password string `form:"password" json:"password" comment:"密码"   validate:"required" example:"123456"`
 }
 
+type AdminLoginOutput struct {
+	Token string `form:"token" json:"token" comment:"token"  validate:"" example:"token"`
+}
+
 func (params *AdminLoginInput) BindingValidParams(c *gin.Context) error {
 	return public.DefaultGetValidParams(c, params)
 }
