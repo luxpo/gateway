@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/luxpo/gateway/public"
 )
@@ -16,4 +18,10 @@ type AdminLoginOutput struct {
 
 func (params *AdminLoginInput) BindingValidParams(c *gin.Context) error {
 	return public.DefaultGetValidParams(c, params)
+}
+
+type AdminSessionInfo struct {
+	ID        int       `json:"id"`
+	UserName  string    `json:"user_name"`
+	LoginTime time.Time `json:"login_time"`
 }
