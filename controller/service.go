@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-dora/go-common/lib"
+	"github.com/luxpo/gateway/dao"
 	"github.com/luxpo/gateway/dto"
 	"github.com/luxpo/gateway/middleware"
 )
@@ -32,6 +34,34 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 		return
 	}
 
-	out := &dto.ServiceListOutput{}
+	tx, err := lib.GetGormPool("default")
+	if err != nil {
+		middleware.ResponseError(c, 2001, err)
+		return
+	}
+
+	//从db中分页读取基本信息
+	serviceInfo := &dao.ServiceInfo{}
+	list, total, err := serviceInfo.PageList(c, tx, params)
+	if err != nil {
+		middleware.ResponseError(c, 2002, err)
+		return
+	}
+
+	//格式化输出信息
+	outList := []dto.ServiceListItemOutput{}
+	for _, listItem := range list {
+		outItem := dto.ServiceListItemOutput{
+			ID:          listItem.ID,
+			LoadType:    listItem.LoadType,
+			ServiceName: listItem.ServiceName,
+			ServiceDesc: listItem.ServiceDesc,
+		}
+		outList = append(outList, outItem)
+	}
+	out := &dto.ServiceListOutput{
+		Total: total,
+		List:  outList,
+	}
 	middleware.ResponseSuccess(c, out)
 }
