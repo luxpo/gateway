@@ -6,4 +6,6 @@ go get -u ./...
 
 swag init
 http://localhost:8880/swagger/index.html
+
+swag init && go run main.go
 ```
