@@ -39,8 +39,7 @@ func (t *Admin) LoginCheck(c *gin.Context, tx *gorm.DB, param *dto.AdminLoginInp
 
 func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error) {
 	out := &Admin{}
-	tx = tx.Set("trace_context", public.GetGinTraceContext(c))
-	err := tx.Where(search).Find(out).Error
+	err := tx.WithContext(c).Where(search).Find(out).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +47,5 @@ func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error)
 }
 
 func (t *Admin) Save(c *gin.Context, tx *gorm.DB) error {
-	tx = tx.Set("trace_context", public.GetGinTraceContext(c))
-	return tx.Save(t).Error
+	return tx.WithContext(c).Save(t).Error
 }
