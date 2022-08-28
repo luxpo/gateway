@@ -40,7 +40,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 		return
 	}
 
-	//从db中分页读取基本信息
+	// 从 db 中分页读取基本信息
 	serviceInfo := &dao.ServiceInfo{}
 	list, total, err := serviceInfo.PageList(c, tx, params)
 	if err != nil {
@@ -48,14 +48,24 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 		return
 	}
 
-	//格式化输出信息
+	// 格式化输出信息
 	outList := []dto.ServiceListItemOutput{}
 	for _, listItem := range list {
+		serviceDetail, err := listItem.ServiceDetail(c, tx, &listItem)
+		if err != nil {
+			middleware.ResponseError(c, 2003, err)
+		}
+		ipList := serviceDetail.LoadBalance.GetIPListByModel()
+
 		outItem := dto.ServiceListItemOutput{
 			ID:          listItem.ID,
 			LoadType:    listItem.LoadType,
 			ServiceName: listItem.ServiceName,
 			ServiceDesc: listItem.ServiceDesc,
+			ServiceAddr: serviceDetail.GenServiceAddr(),
+			Qps:         0,
+			Qpd:         0,
+			TotalNode:   len(ipList),
 		}
 		outList = append(outList, outItem)
 	}
